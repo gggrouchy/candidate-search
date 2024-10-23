@@ -3,10 +3,10 @@
 export interface Candidate {
   login: string;
   avatar_url: string;
-  name: string | null;
-  location: string | null;
-  email: string | null;
-  company: string | null;
+  name?: string;
+  location?: string;
+  email?: string;
+  company?: string;
   html_url: string;
 }
 

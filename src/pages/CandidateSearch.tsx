@@ -1,68 +1,66 @@
 import { useState, useEffect } from 'react';
-import { searchGithub } from '../api/API';
+import { searchGithub, searchGithubUser } from '../api/API';
 import { Candidate } from '../interfaces/Candidate.interface';
+import { useCandidates } from '../context/CandidatesContext';
 
 const CandidateSearch = () => {
-  const [candidates, setCandidates] = useState<Candidate[]>([]);
-  const [currentCandidateIndex, setCurrentCandidateIndex] = useState(0);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [candidate, setCandidate] = useState<Candidate | null>(null);
+  const { saveCandidate } = useCandidates();
 
   useEffect(() => {
-    const fetchCandidates = async () => {
-      try {
-        const response = await searchGithub();
-        setCandidates(response);
-        setLoading(false);
-      } catch (err) {
-        setError('Error fetching candidates.');
-        setLoading(false);
-      }
-    };
-
-    fetchCandidates();
+    fetchCandidate();
   }, []);
 
+  const fetchCandidate = async () => {
+    try {
+      const data: Candidate[] = await searchGithub();
+      if (data.length > 0) {
+        const randomUser = data[Math.floor(Math.random() * data.length)];
+        const detailedUser: Candidate = await searchGithubUser(randomUser.login);
+        setCandidate(detailedUser); // Set only if the candidate matches the Candidate type
+      } else {
+        setCandidate(null);
+      }
+    } catch (err) {
+      console.error('Error fetching candidate:', err);
+      setCandidate(null); // Set to null in case of error
+    }
+  };
   const handleSaveCandidate = () => {
-    // Add logic to save the candidate (to state or local storage)
-    setCurrentCandidateIndex((prevIndex) => prevIndex + 1);
+    if (candidate) {
+      saveCandidate(candidate);
+    }
+    fetchCandidate();
   };
 
   const handleSkipCandidate = () => {
-    // Logic to skip the current candidate
-    setCurrentCandidateIndex((prevIndex) => prevIndex + 1);
+    fetchCandidate();
   };
-
-  if (loading) return <p>Loading...</p>;
-  if (error) return <p>{error}</p>;
-
-  const currentCandidate = candidates[currentCandidateIndex];
 
   return (
     <div>
       <h1>Candidate Search</h1>
-      {currentCandidate ? (
-        <div>
-          <img src={currentCandidate.avatar_url} alt="Candidate Avatar" />
-          <p>Name: {currentCandidate.name}</p>
-          <p>Username: {currentCandidate.login}</p>
-          <p>Location: {currentCandidate.location}</p>
-          <p>Email: {currentCandidate.email}</p>
-          <p>Company: {currentCandidate.company}</p>
-          <a href={currentCandidate.html_url} target="_blank" rel="noopener noreferrer">
-            GitHub Profile
+      {candidate ? (
+        <div className="candidate-card">
+          <img src={candidate.avatar_url} alt={`${candidate.login} avatar`} />
+          <h2>{candidate.name || candidate.login}</h2>
+          <p>Username: {candidate.login}</p>
+          <p>Location: {candidate.location || 'Not available'}</p>
+          <p>Email: {candidate.email || 'Not available'}</p>
+          <p>Company: {candidate.company || 'Not available'}</p>
+          <a href={candidate.html_url} target="_blank" rel="noopener noreferrer">
+            View Profile
           </a>
-          <div>
-            <button onClick={handleSaveCandidate}>+</button>
-            <button onClick={handleSkipCandidate}>-</button>
+          <div className="buttons">
+            <button onClick={handleSaveCandidate}>Save</button>
+            <button onClick={handleSkipCandidate}>Skip</button>
           </div>
         </div>
       ) : (
-        <p>No more candidates available to review.</p>
+        <p>No more candidates available.</p>
       )}
     </div>
   );
 };
 
 export default CandidateSearch;
-

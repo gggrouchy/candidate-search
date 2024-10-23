@@ -6,6 +6,8 @@ import App from './App';
 import CandidateSearch from './pages/CandidateSearch';
 import SavedCandidates from './pages/SavedCandidates';
 import ErrorPage from './pages/ErrorPage';
+import { CandidatesProvider } from './context/CandidatesContext';
+
 
 const router = createBrowserRouter([
   {
@@ -27,5 +29,9 @@ const router = createBrowserRouter([
 
 const rootElement = document.getElementById('root');
 if (rootElement) {
-  ReactDOM.createRoot(rootElement).render(<RouterProvider router={router} />);
+  ReactDOM.createRoot(rootElement).render(
+    <CandidatesProvider>
+       <RouterProvider router={router} />
+    </CandidatesProvider>
+  );
 }

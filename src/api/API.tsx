@@ -1,5 +1,6 @@
 import { Candidate } from "../interfaces/Candidate.interface";
 
+
 // Fetch multiple GitHub users
 const searchGithub = async (): Promise<Candidate[]> => {
   try {
