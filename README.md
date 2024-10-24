@@ -17,6 +17,7 @@ TypeScript, React, CSS, HTML
 
 ## Deployed page
 Click on link below. 
+
 https://candidate-search-2-s4qb.onrender.com
 
 
