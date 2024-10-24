@@ -4,7 +4,7 @@ import { Candidate } from '../interfaces/Candidate.interface';
 import { useCandidates } from '../context/CandidatesContext';
 
 const CandidateSearch = () => {
-  const [candidate, setCandidate] = useState<Candidate | null>(null);
+  const [candidate, setCandidate] = useState<any>(null);
   const { saveCandidate } = useCandidates();
 
   useEffect(() => {
@@ -16,7 +16,7 @@ const CandidateSearch = () => {
       const data: Candidate[] = await searchGithub();
       if (data.length > 0) {
         const randomUser = data[Math.floor(Math.random() * data.length)];
-        const detailedUser: Candidate = await searchGithubUser(randomUser.login);
+        const detailedUser = await searchGithubUser(randomUser.login);
         setCandidate(detailedUser); // Set only if the candidate matches the Candidate type
       } else {
         setCandidate(null);

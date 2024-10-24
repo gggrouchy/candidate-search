@@ -1,4 +1,3 @@
-import { useState, useEffect } from 'react';
 import { useCandidates } from '../context/CandidatesContext';
 
 const SavedCandidates = () => {
